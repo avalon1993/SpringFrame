@@ -500,6 +500,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         // Make sure bean class is actually resolved at this point, and
         // clone the bean definition in case of a dynamically resolved Class
         // which cannot be stored in the shared merged bean definition.
+        //锁定calss,根据设置的class属性或者根据className来解析class
         Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
         if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
             mbdToUse = new RootBeanDefinition(mbd);
@@ -516,6 +517,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         try {
             // Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+            //给BeanPostProcessors一个机会来返回代理来替代真正的示例
             Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
             if (bean != null) {
                 return bean;
@@ -1414,11 +1416,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
             // Add property values based on autowire by name if applicable.
             if (resolvedAutowireMode == AUTOWIRE_BY_NAME) {
-                autowireByName(beanName, mbd, bw, newPvs);
+                autowireByName(beanName, mbd, bw, newPvs); //根据名称自动注入
             }
             // Add property values based on autowire by type if applicable.
             if (resolvedAutowireMode == AUTOWIRE_BY_TYPE) {
-                autowireByType(beanName, mbd, bw, newPvs);
+                autowireByType(beanName, mbd, bw, newPvs);//根据类型自动注入
             }
             pvs = newPvs;
         }
@@ -1520,10 +1522,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 // Don't try autowiring by type for type Object: never makes sense,
                 // even if it technically is a unsatisfied, non-simple property.
                 if (Object.class != pd.getPropertyType()) {
+                    //探测指定属性的set方法
                     MethodParameter methodParam = BeanUtils.getWriteMethodParameter(pd);
                     // Do not allow eager init for type matching in case of a prioritized post-processor.
                     boolean eager = !(bw.getWrappedInstance() instanceof PriorityOrdered);
                     DependencyDescriptor desc = new AutowireByTypeDependencyDescriptor(methodParam, eager);
+
                     Object autowiredArgument = resolveDependency(desc, beanName, autowiredBeanNames, converter);
                     if (autowiredArgument != null) {
                         pvs.add(propertyName, autowiredArgument);
@@ -1701,7 +1705,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         // Create a deep copy, resolving any references for values.
         List<PropertyValue> deepCopy = new ArrayList<>(original.size());
         boolean resolveNecessary = false;
-        for (PropertyValue pv : original) {
+        for (PropertyValue pv : original) { //遍历属性,将属性转换为对应类的对应属性的类型
             if (pv.isConverted()) {
                 deepCopy.add(pv);
             } else {

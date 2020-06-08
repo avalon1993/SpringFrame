@@ -575,7 +575,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             mbd.resolvedTargetType = beanType;
         }
 
-        // Allow post-processors to modify the merged bean definition. 这边主要是寻找几个meta，@PostConstruct,@Autowire,@Value,@Resource，@PreDestory等
+        // Allow post-processors to modify the merged bean definition.
+        // 这边主要是寻找几个meta，@PostConstruct,@Autowire,@Value,@Resource，@PreDestory等
         synchronized (mbd.postProcessingLock) {
             if (!mbd.postProcessed) {
                 try {
@@ -625,7 +626,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 //当exposedObject （初始化之后的bean等于原始的bean，说明不是proxy），则把缓存中的bean赋值给exposedObject
                 if (exposedObject == bean) {
                     exposedObject = earlySingletonReference;
-                } else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) { //检测该bean的dependon的bean是否都已经初始化好了
+                } else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) { //检测该bean的dependent的bean是否都已经初始化好了
                     String[] dependentBeans = getDependentBeans(beanName);
                     Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
                     for (String dependentBean : dependentBeans) {
@@ -633,6 +634,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                             actualDependentBeans.add(dependentBean);
                         }
                     }
+                    //因为bean创建后其依赖的bean一定是已经创建好的,
+                    //actualDependentBeans不为空,则表示当前bean创建后其依赖的ban却没有全部创建完,也就是说存在依赖循环
                     if (!actualDependentBeans.isEmpty()) {
                         throw new BeanCurrentlyInCreationException(beanName,
                                 "Bean with name '" + beanName + "' has been injected into other beans [" +
@@ -1187,7 +1190,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             return obtainFromSupplier(instanceSupplier, beanName);
         }
 
-        if (mbd.getFactoryMethodName() != null) {//如果工程方法不为空则使用工程方法初始化策略
+        //如果工程方法不为空则使用工程方法初始化策略
+        if (mbd.getFactoryMethodName() != null) {
             return instantiateUsingFactoryMethod(beanName, mbd, args);
         }
 
@@ -1195,13 +1199,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         boolean resolved = false;
         boolean autowireNecessary = false;
         if (args == null) {
-            synchronized (mbd.constructorArgumentLock) {//一个类有多个构造函数,每个构造函数都有不同的参数,所以调用前需要先根据参数锁定构造函数或对应的工程方法
+            //一个类有多个构造函数,每个构造函数都有不同的参数,所以调用前需要先根据参数锁定构造函数或对应的工程方法
+            synchronized (mbd.constructorArgumentLock) {
                 if (mbd.resolvedConstructorOrFactoryMethod != null) {
                     resolved = true;
                     autowireNecessary = mbd.constructorArgumentsResolved;
                 }
             }
         }
+
+        //如果已经解析过则使用解析好的构造函数方法不需要再次锁定
         if (resolved) {
             if (autowireNecessary) {
                 //构造函数自动注入

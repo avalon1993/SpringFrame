@@ -349,7 +349,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
         if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) { //如果已经处理过
             return bean;
         }
-        if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {//无须增强
+        if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {//无须advice
             return bean;
         }
         //给定的ban类是否代表一个基础设施类,基础设施类不应代理,或者配置了指定bean不需要自动代理

@@ -3,3 +3,5 @@
 /teamcore.iml
 **/.DS_Store
 /.gradle/*
+.gradle
+**/.gradle

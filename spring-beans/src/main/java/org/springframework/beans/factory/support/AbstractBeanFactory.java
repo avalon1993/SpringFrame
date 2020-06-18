@@ -296,7 +296,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                     logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
                 }
             }
-            //返回对应示实例
+            //返回对应实例
             bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
         } else {
             // Fail if we're already creating this bean instance:
@@ -332,7 +332,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
             }
 
             try {
-                //将存储XML配置文件的GernericBeanDefiniton转换为RootBeanDefinition,
+                //将存储XML配置文件的GernericBeanDefinition转换为RootBeanDefinition,
                 //如果指定BeanName是子Bean的话同时会合并父类的相关属性
                 final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
                 checkMergedBeanDefinition(mbd, beanName, args);

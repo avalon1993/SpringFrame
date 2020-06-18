@@ -1,0 +1,8 @@
+/target/*
+/.idea/*
+/teamcore.iml
+**/.DS_Store
+/.gradle/*
+.gradle
+**/.gradle
+.gradle/*

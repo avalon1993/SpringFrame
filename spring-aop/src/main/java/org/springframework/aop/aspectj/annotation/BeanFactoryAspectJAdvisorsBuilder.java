@@ -111,6 +111,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
                             if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
                                 MetadataAwareAspectInstanceFactory factory =
                                         new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+                                //解析标记AspectJ注解中的advice方法
                                 List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
                                 if (this.beanFactory.isSingleton(beanName)) {
                                     this.advisorsCache.put(beanName, classAdvisors);
@@ -140,6 +141,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
         if (aspectNames.isEmpty()) {
             return Collections.emptyList();
         }
+        //记录在缓存中
         List<Advisor> advisors = new ArrayList<>();
         for (String aspectName : aspectNames) {
             List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
